@@ -3,11 +3,13 @@ package org.bahmni.eventrouterservice.route;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.bahmni.eventrouterservice.configuration.RouteDescriptionLoader.RouteDescription;
 import org.bahmni.eventrouterservice.configuration.RouteDescriptionLoader.AdditionalProperty;
+import org.bahmni.eventrouterservice.configuration.RouteDescriptionLoader.AdditionalPropertyFilter;
 import org.bahmni.eventrouterservice.configuration.RouteDescriptionLoader.SplitPatternConfiguration;
 
 import java.util.LinkedHashMap;
@@ -47,8 +49,7 @@ class EventProcessor implements Processor {
 
             for (AdditionalProperty obj : additionalProperties) {
                 String parentPath = obj.getParentPath();
-                String filterKeyPath = obj.getFilterKeyPath();
-                String filterValue = obj.getFilterValue();
+                List<AdditionalPropertyFilter> additionalPropertyFilters = obj.getAdditionalPropertyFilters();
                 LinkedHashMap<String, SplitPatternConfiguration> splitPatternConfigurations = obj.getSplitPatternConfigurations();
                 if (obj.getStaticProperties() != null && obj.getStaticProperties().size() > 0) {
                     obj.getStaticProperties().entrySet().forEach(entry -> {
@@ -61,14 +62,19 @@ class EventProcessor implements Processor {
                         Object parentObj = JsonPath.read(payloadAsJsonString, parentPath);
                         if (parentObj instanceof List && !((List<?>) parentObj).isEmpty()) {
                             contextRef[0] = contextRef[0].map(parentPath, (currentValue, configuration) -> {
-                                Object filterObj = JsonPath.read(currentValue, filterKeyPath);
-                                Object valueObj = JsonPath.read(currentValue, entry.getValue());
                                 DocumentContext obsContext = JsonPath.parse(currentValue);
-                                if (splitPatternConfigurations != null && splitPatternConfigurations.get(entry.getKey()) != null) {
-                                    valueObj = applySplitPattern(valueObj, splitPatternConfigurations.get(entry.getKey()));
-                                } 
-                                if ((filterKeyPath == null && filterValue == null) || (filterObj != null && filterObj.toString().contains(filterValue))) {
-                                    obsContext.put(JsonPath.compile("$"), entry.getKey(), valueObj);
+                                try {
+                                    Object valueObj = JsonPath.read(currentValue, entry.getValue());
+                                    if (valueObj != null) {
+                                        if (splitPatternConfigurations != null && splitPatternConfigurations.get(entry.getKey()) != null) {
+                                            valueObj = applySplitPattern(valueObj, splitPatternConfigurations.get(entry.getKey()));
+                                        } 
+                                        if (additionalPropertyFilters == null || additionalPropertyFilters.size() == 0 || applyFilter(currentValue, additionalPropertyFilters)) {
+                                            obsContext.put(JsonPath.compile("$"), entry.getKey(), valueObj);
+                                        }
+                                    }
+                                } catch (PathNotFoundException e) {
+                                    log.info("Path not found: " + entry.getValue());
                                 }
                                 return obsContext.json();
                             });
@@ -81,6 +87,18 @@ class EventProcessor implements Processor {
             log.info("Failed to process payload for additional properties : " + exception.getMessage());
             throw new RuntimeException(exception);
         }
+    }
+
+    private boolean applyFilter(Object value, List<AdditionalPropertyFilter> additionalPropertyFilters) {
+        for (AdditionalPropertyFilter filter : additionalPropertyFilters) {
+            if (filter.getKeyPath() != null && filter.getValue() != null) {
+                Object filterObj = JsonPath.read(value, filter.getKeyPath());
+                if (filterObj == null || (filterObj != null && !filterObj.toString().contains(filter.getValue()))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private Object applySplitPattern(Object value, SplitPatternConfiguration splitConfig) {
