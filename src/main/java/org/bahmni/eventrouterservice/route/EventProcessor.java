@@ -32,6 +32,7 @@ class EventProcessor implements Processor {
         }
         String payloadAsJsonString = exchange.getIn().getBody(String.class);
         String updatedPayloadAsJson = addAdditionalProperties(payloadAsJsonString, routeDescription.getAdditionalProperties());
+        System.out.println("PAYLOAD JSON --- " + updatedPayloadAsJson);
         exchange.getIn().setBody(updatedPayloadAsJson);
 
         String destinationTopic = getDestination(exchange.getIn().getHeader("eventType"));
