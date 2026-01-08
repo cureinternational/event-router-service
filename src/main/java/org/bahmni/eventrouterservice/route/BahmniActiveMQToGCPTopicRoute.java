@@ -55,7 +55,7 @@ public class BahmniActiveMQToGCPTopicRoute extends RouteBuilder {
                     .useOriginalMessage()
                     .redeliveryDelay(routeDescription.getErrorDestination().getRetryDeliveryDelayInMills())
                     .maximumRedeliveries(routeDescription.getErrorDestination().getMaxRetryDelivery())
-                    .to("activemq:queue:" + routeDescription.getErrorDestination().getQueue().getName())
+                    .toD("activemq:queue:" + routeDescription.getErrorDestination().getQueue().getName() + "?timeToLive=3888000000")
                     .log("Message sent to ActiveMQ failed message queue: "+routeDescription.getErrorDestination().getQueue().getName())
                 .end()
                 .filter(eventPropertiesFilter)
