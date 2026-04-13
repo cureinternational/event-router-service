@@ -38,10 +38,10 @@
     },
     "filterBy": {
       "eventProperties": {
-        "display": "confirmedPatient = true"
+        "confirmedPatient": "true"
       },
       "patientProperties": {
-        "display": "confirmedPatient = true"
+        "confirmedPatient": "true"
       }
     }
   }

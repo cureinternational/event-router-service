@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 public abstract class PropertiesFilter {
@@ -24,8 +25,7 @@ public abstract class PropertiesFilter {
             JsonNode payload = objectMapper.readValue(jsonPayloadAsString, JsonNode.class);
             for (Map.Entry<String, String> filterCondition : listOfFilters.entrySet()) {
                 matches = matches
-                        && payload.findValue(filterCondition.getKey()) != null
-                        && payload.findValues(filterCondition.getKey()).stream().anyMatch(node -> node.asText("").equals(filterCondition.getValue()));
+                        && (directFieldMatch(payload, filterCondition) || attributeTypeMatch(payload, filterCondition));
             }
             log.info("Filters conditions matches : " + matches +" for uuid : "+payload.get("uuid"));
             return matches;
@@ -33,5 +33,23 @@ public abstract class PropertiesFilter {
             log.info("Failed to process payload : " + exception.getMessage());
             throw new RuntimeException(exception);
         }
+    }
+
+    private boolean directFieldMatch(JsonNode payload, Map.Entry<String, String> filterCondition) {
+        return payload.findValue(filterCondition.getKey()) != null
+                && payload.findValues(filterCondition.getKey()).stream()
+                        .anyMatch(node -> node.asText("").equals(filterCondition.getValue()));
+    }
+
+    private boolean attributeTypeMatch(JsonNode payload, Map.Entry<String, String> filterCondition) {
+        return payload.findValues("attributes").stream()
+                .filter(JsonNode::isArray)
+                .flatMap(attrArray -> StreamSupport.stream(attrArray.spliterator(), false))
+                .anyMatch(attr -> {
+                    String attrTypeName = attr.path("attributeType").path("display").asText("");
+                    String attrValue = attr.path("value").asText("");
+                    return attrTypeName.equals(filterCondition.getKey())
+                            && attrValue.equals(filterCondition.getValue());
+                });
     }
 }
