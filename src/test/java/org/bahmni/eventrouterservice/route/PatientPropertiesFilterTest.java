@@ -40,7 +40,7 @@ public class PatientPropertiesFilterTest {
         Exchange exchange = mock(Exchange.class);
         String patientUUID = "5c7506d6-0e42-43f4-a770-c525ccce7796";
         when(exchange.getProperty(PATIENT_UUID.getValue(), String.class)).thenReturn(patientUUID);
-        File routeConfigurationFile = new FileSystemResource("src/test/resources/test-patient-new.json").getFile();
+        File routeConfigurationFile = new FileSystemResource("src/test/resources/test-patient.json").getFile();
         JsonObject payload = new ObjectMapper().readValue(routeConfigurationFile, JsonObject.class);
         when(bahmniAPIGateway.getPatient(patientUUID)).thenReturn(payload.toJson());
 
