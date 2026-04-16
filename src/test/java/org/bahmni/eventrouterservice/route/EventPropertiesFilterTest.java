@@ -30,7 +30,7 @@ class EventPropertiesFilterTest {
         RouteDescription routeDescription = mock(RouteDescription.class);
         FilterBy filterBy = mock(FilterBy.class);
         LinkedHashMap<String, String> filterOnProperties = new LinkedHashMap<>();
-        filterOnProperties.put("display", "confirmedPatient = true");
+        filterOnProperties.put("confirmedPatient", "true");
         when(routeDescription.getFilterBy()).thenReturn(filterBy);
         when(filterBy.getEventProperties()).thenReturn(filterOnProperties);
 

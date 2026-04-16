@@ -135,7 +135,7 @@
         "resourceVersion": "1.8"
       },
       {
-        "display": "confirmedPatient = true",
+        "display": "true",
         "uuid": "740fa50d-7ee3-4924-887d-3aabdfb06ec4",
         "value": true,
         "attributeType": {

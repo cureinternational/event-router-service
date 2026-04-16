@@ -31,6 +31,31 @@ public class PatientPropertiesFilterTest {
         RouteDescription routeDescription = mock(RouteDescription.class);
         FilterBy filterBy = mock(FilterBy.class);
         LinkedHashMap<String, String> filterOnPatientProperties = new LinkedHashMap<>();
+        filterOnPatientProperties.put("confirmedPatient", "true");
+        when(routeDescription.getFilterBy()).thenReturn(filterBy);
+        when(filterBy.getPatientProperties()).thenReturn(filterOnPatientProperties);
+
+        PatientPropertiesFilter patientPropertiesFilter = new PatientPropertiesFilter(new ObjectMapper(), routeDescription, bahmniAPIGateway);
+
+        Exchange exchange = mock(Exchange.class);
+        String patientUUID = "5c7506d6-0e42-43f4-a770-c525ccce7796";
+        when(exchange.getProperty(PATIENT_UUID.getValue(), String.class)).thenReturn(patientUUID);
+        File routeConfigurationFile = new FileSystemResource("src/test/resources/test-patient.json").getFile();
+        JsonObject payload = new ObjectMapper().readValue(routeConfigurationFile, JsonObject.class);
+        when(bahmniAPIGateway.getPatient(patientUUID)).thenReturn(payload.toJson());
+
+        boolean matches = patientPropertiesFilter.matches(exchange);
+
+        Assertions.assertTrue(matches);
+    }
+
+    @Test
+    public void givenFilterConditions_whenAppliedOnOldPatientFormat_thenShouldReturnAMatch() throws IOException {
+
+        BahmniAPIGateway bahmniAPIGateway = mock(BahmniAPIGateway.class);
+        RouteDescription routeDescription = mock(RouteDescription.class);
+        FilterBy filterBy = mock(FilterBy.class);
+        LinkedHashMap<String, String> filterOnPatientProperties = new LinkedHashMap<>();
         filterOnPatientProperties.put("display", "confirmedPatient = true");
         when(routeDescription.getFilterBy()).thenReturn(filterBy);
         when(filterBy.getPatientProperties()).thenReturn(filterOnPatientProperties);
@@ -40,9 +65,10 @@ public class PatientPropertiesFilterTest {
         Exchange exchange = mock(Exchange.class);
         String patientUUID = "25447fd7-1082-46ef-aa39-38914475f52e";
         when(exchange.getProperty(PATIENT_UUID.getValue(), String.class)).thenReturn(patientUUID);
-        File routeConfigurationFile = new FileSystemResource("src/test/resources/test-patient.json").getFile();
-        JsonObject payload = new ObjectMapper().readValue(routeConfigurationFile, JsonObject.class);
-        when(bahmniAPIGateway.getPatient(patientUUID)).thenReturn(payload.toJson());
+        String oldFormatPatientJson = "{\"uuid\":\"25447fd7-1082-46ef-aa39-38914475f52e\","
+                + "\"person\":{\"attributes\":[{\"display\":\"confirmedPatient = true\","
+                + "\"value\":true,\"attributeType\":{\"display\":\"confirmedPatient\"}}]}}";
+        when(bahmniAPIGateway.getPatient(patientUUID)).thenReturn(oldFormatPatientJson);
 
         boolean matches = patientPropertiesFilter.matches(exchange);
 
