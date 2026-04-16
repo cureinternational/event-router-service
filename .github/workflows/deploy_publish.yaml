@@ -20,7 +20,7 @@ jobs:
           rm trivy_scan.sh
   build-publish-docker:
     name: Build & Publish Docker Image
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: Trivy
     steps:
       - uses: actions/checkout@v3
