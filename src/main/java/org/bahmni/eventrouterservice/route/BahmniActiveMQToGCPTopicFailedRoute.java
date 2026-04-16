@@ -67,7 +67,7 @@ public class BahmniActiveMQToGCPTopicFailedRoute extends RouteBuilder {
                     .log(ERROR, "Following exception occurred : ${exception.message} for processing the payload")
                     .useOriginalMessage()
                     .maximumRedeliveries(0)
-                    .to("activemq:queue:"+serviceName+"-dlq")
+                    .to("activemq:queue:"+serviceName+"-dlq?timeToLive=300000") // 5 minutes TTL
                     .log("Failed Message sent to "+serviceName+"-dlq")
                 .end()
                 .log(INFO, "Received failed message from ActiveMQ queue : " + sourceTopic)
