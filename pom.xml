@@ -16,7 +16,6 @@
 	<properties>
 		<java.version>17</java.version>
 		<camel-spring-boot.version>4.10.2</camel-spring-boot.version>
-		<!-- Explicit pins for transitive deps to remediate HIGH CVEs that Spring Boot/Camel BOMs do not yet pin to safe versions -->
 		<protobuf-java.version>3.25.5</protobuf-java.version>
 		<grpc.version>1.75.0</grpc.version>
 	</properties>
@@ -143,7 +142,6 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<!-- HIGH CVE remediation: explicit version pins for transitive deps not safely pinned by the BOMs above -->
 			<dependency>
 				<groupId>com.mchange</groupId>
 				<artifactId>c3p0</artifactId>
