@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.18</version>
+		<version>3.5.14</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.bahmni</groupId>
@@ -15,10 +15,10 @@
 	<description>event-router-service</description>
 	<properties>
 		<java.version>17</java.version>
-		<camel-spring-boot.version>3.21.2</camel-spring-boot.version>
-		<grpc.protobuf.version>1.53.0</grpc.protobuf.version>
-		<log4j.slf4j.version>2.17.1</log4j.slf4j.version>
-
+		<camel-spring-boot.version>4.10.2</camel-spring-boot.version>
+		<!-- Explicit pins for transitive deps to remediate HIGH CVEs that Spring Boot/Camel BOMs do not yet pin to safe versions -->
+		<protobuf-java.version>3.25.5</protobuf-java.version>
+		<grpc.version>1.75.0</grpc.version>
 	</properties>
 	<dependencies>
 
@@ -140,6 +140,29 @@
 				<groupId>org.apache.camel.springboot</groupId>
 				<artifactId>camel-spring-boot-bom</artifactId>
 				<version>${camel-spring-boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!-- HIGH CVE remediation: explicit version pins for transitive deps not safely pinned by the BOMs above -->
+			<dependency>
+				<groupId>com.mchange</groupId>
+				<artifactId>c3p0</artifactId>
+				<version>0.12.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.mchange</groupId>
+				<artifactId>mchange-commons-java</artifactId>
+				<version>0.4.0</version>
+			</dependency>
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-netty-shaded</artifactId>
+				<version>1.75.0</version>
+			</dependency>
+			<dependency>
+				<groupId>io.opentelemetry</groupId>
+				<artifactId>opentelemetry-bom</artifactId>
+				<version>1.62.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

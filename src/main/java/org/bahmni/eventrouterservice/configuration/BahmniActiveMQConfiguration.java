@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 
 @ConditionalOnExpression("${bahmni.activemqToGCP.failed-route-enabled:true} || ${bahmni.activemqToGCP.route-enabled:true}")
 @Configuration
