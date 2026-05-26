@@ -31,7 +31,9 @@ class PatientPropertiesFilter extends PropertiesFilter implements Predicate {
 
         String patientUuid = exchange.getProperty(PATIENT_UUID.getValue(), String.class);
         if(patientUuid == null) {
-            throw new RuntimeException("Patient Details not found");
+            log.warn("Patient UUID not found in payload — dropping message. eventType: {}",
+                     exchange.getIn().getHeader("eventType"));
+            return false;
         }
         String patientPayloadAsJson = bahmniAPIGateway.getPatient(patientUuid);
         return super.matches(patientPayloadAsJson, routeDescription.getFilterBy().getPatientProperties());

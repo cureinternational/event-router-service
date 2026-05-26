@@ -117,7 +117,7 @@ public class PatientPropertiesFilterTest {
     }
 
     @Test
-    public void givenFilterConditionsAndPatientInfoNotPresent_whenApplied_thenShouldThrowException() {
+    public void givenFilterConditionsAndPatientInfoNotPresent_whenApplied_thenShouldReturnFalse() {
 
         BahmniAPIGateway bahmniAPIGateway = mock(BahmniAPIGateway.class);
         RouteDescription routeDescription = mock(RouteDescription.class);
@@ -131,9 +131,10 @@ public class PatientPropertiesFilterTest {
 
         Exchange exchange = mock(Exchange.class);
         when(exchange.getProperty(PATIENT_UUID.getValue(), String.class)).thenReturn(null);
+        when(exchange.getIn()).thenReturn(mock(org.apache.camel.Message.class));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> patientPropertiesFilter.matches(exchange));
+        boolean matches = patientPropertiesFilter.matches(exchange);
 
-        Assertions.assertEquals(exception.getMessage(), "Patient Details not found");
+        Assertions.assertFalse(matches);
     }
 }
