@@ -11,6 +11,17 @@ jobs:
   Trivy:
     runs-on: ubuntu-latest
     steps:
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Pre-populate Maven cache
+        run: ./mvnw install -DskipTests --no-transfer-progress -q
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Trivy Scan
