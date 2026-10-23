@@ -1,0 +1,7 @@
+# Read automatically by `trivy fs .` (run from the repo root by trivy_scan.sh).
+# Offline scan: do not query Maven Central while resolving pom.xml dependencies.
+# Online resolution fetches many poms in a burst and gets HTTP 429, failing the job.
+# Trade-off: transitive dependencies not in ~/.m2 are not resolved, so fewer
+# vulnerabilities are reported. Revisit (e.g. warm ~/.m2 in the workflow).
+scan:
+  offline: true
