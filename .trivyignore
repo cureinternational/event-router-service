@@ -15,3 +15,23 @@ CVE-2025-22235
 CVE-2026-22733
 CVE-2025-41249
 
+# Found once Trivy could read pom.xml (Maven Central 429 fixed); to be reviewed/upgraded later
+CVE-2026-40860 #Critical camel-activemq, camel-google-pubsub 3.21.2 (fix needs Camel 4.x)
+CVE-2026-40453 #Critical camel-google-pubsub 3.21.2 (fix needs Camel 4.x)
+CVE-2026-43866 #High camel-activemq, camel-google-pubsub 3.21.2 (fix needs Camel 4.x)
+CVE-2026-40466 #High activemq-broker 5.16.7
+CVE-2026-41044 #High activemq-broker 5.16.7
+CVE-2026-42588 #High activemq-broker 5.16.7
+CVE-2026-45505 #High activemq-broker 5.16.7
+CVE-2026-68494 #High jackson-core 2.13.5
+CVE-2026-89425 #High jackson-core 2.13.5
+CVE-2026-54512 #High jackson-databind 2.13.5
+CVE-2026-54513 #High jackson-databind 2.13.5
+CVE-2026-91776 #High jackson-databind 2.13.5
+CVE-2026-91777 #High jackson-databind 2.13.5
+CVE-2026-40973 #High spring-boot 2.7.18
+CVE-2026-41849 #High spring-expression 5.3.31
+CVE-2026-41850 #High spring-expression 5.3.31
+CVE-2026-41855 #High spring-jms
+CVE-2026-40984 #High micrometer-core 1.9.17
+CVE-2026-55153 #High mchange-commons-java 0.2.15
