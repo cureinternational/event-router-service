@@ -13,6 +13,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+          cache: maven
+      # Trivy resolves pom.xml dependencies from Maven Central in a burst and gets HTTP 429.
+      # Warm ~/.m2 first (Maven fetches sequentially) so Trivy reads poms locally.
+      - name: Resolve Maven dependencies
+        run: ./mvnw -B -q dependency:resolve
       - name: Trivy Scan
         run: |
           wget -q https://raw.githubusercontent.com/Bahmni/bahmni-infra-utils/main/trivy_scan.sh && chmod +x trivy_scan.sh
